@@ -17,4 +17,5 @@ Route::group([
     'middleware' => 'auth:api'
 ], function () {
     Route::post('/', [EventController::class, 'create']);
+    Route::get('/', [EventController::class, 'index']);
 });

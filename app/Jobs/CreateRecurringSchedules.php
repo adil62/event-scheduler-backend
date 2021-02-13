@@ -14,7 +14,7 @@ class CreateRecurringSchedules implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    protected $eventId;
+    protected $event;
     protected $dayOfWeek;
 
     /**
@@ -22,9 +22,9 @@ class CreateRecurringSchedules implements ShouldQueue
      *
      * @return void
      */
-    public function __construct($eventId, $dayOfWeek)
+    public function __construct($event, $dayOfWeek)
     {
-        $this->eventId = $eventId;
+        $this->event = $event;
         $this->dayOfWeek = $dayOfWeek;
     }
 
@@ -53,7 +53,7 @@ class CreateRecurringSchedules implements ShouldQueue
         // save each recurring event into db.
         foreach($calculatedScheduleDatesForNext90Days as $scheduleDate) {
             $schedule = new Schedule;
-            $schedule->event_id = $this->eventId ;
+            $schedule->event_id = $this->event->id ;
             $schedule->schedule_date = $scheduleDate;
             $schedule->save();
         }

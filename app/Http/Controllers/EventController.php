@@ -6,10 +6,17 @@ use App\Models\Event;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Jobs\CreateRecurringSchedules;
+use \Illuminate\Http\JsonResponse;
 
+/**
+ * API's for event creaetion and listing.
+ */
 class EventController extends Controller
 { 
-    public function create(Request $request) {
+    /**
+     * Create event + 90days schedule.
+     */
+    public function create(Request $request) : JsonResponse {
         try {
             $dayOfWeek = STR::lower($request->dayOfWeek);
 
@@ -24,7 +31,7 @@ class EventController extends Controller
             $event->save();
             
             // generate next 90days schedule in the background.
-            CreateRecurringSchedules::dispatch($event->id, $dayOfWeek);
+            CreateRecurringSchedules::dispatch($event , $dayOfWeek);
 
             return response()->json([
                 'message' => 'successfully created event.',
@@ -32,10 +39,23 @@ class EventController extends Controller
             ]);
         } catch(\Throwable $e) {
             report($e);
-            throw $e;
+           
             return response()->json([
                 'message' => 'failed creating event.',
             ], 400);
         }
+    }
+
+    /**
+     * Return all schedules for the current user.
+     */
+    public function index() : JsonResponse {
+        $schedules = Event::leftJoin('schedules', 'schedules.event_id', 'events.id')
+        ->where('user_id', auth()->user()->id)
+        ->get();
+
+        return response()->json([
+            'schedules' => $schedules
+        ]);
     }
 }
