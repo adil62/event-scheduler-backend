@@ -81,9 +81,7 @@ class AuthController extends Controller
 
 	        return response()->json([
 	            'message' => 'user successfully registered.',
-	            'user' => [
-	            	'id' => $user->id
-	            ]
+	            'user' =>  $user 
 	        ], 201);
 	    } catch (\Throwable $e) {
             report($e);
